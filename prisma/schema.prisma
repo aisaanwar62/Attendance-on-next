@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Attendance {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status    String?
+  date      DateTime
+  user      User     @relation(fields: [userid], references: [id])
+  userid    Int
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LeaveRequest {
+  id     Int      @id @default(autoincrement())
+  userId Int // Assuming this refers to the User's ID in your system
+  From   DateTime @default(now())
+  To     DateTime
+  name   String
+  Reason String
+  status String
+  // Define a relation to User model
+  // user   User     @relation(fields: [userId], references: [id])
+  User   User     @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id              Int            @id @default(autoincrement())
+  name            String?
+  email           String         @unique
+  password        String
+  confirmpassword String
+  // Define relation to LeaveRequest
+  leaveRequests   LeaveRequest[]
+  Attendance      Attendance[]
+}
